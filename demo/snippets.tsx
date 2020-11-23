@@ -353,14 +353,6 @@ const alteration = `
 
 const anchors = `
 <p>
-  Anchors are tricky because they can encompass text and blocks, but
-  we don't want to override event handlers defined by user renderers.
-  So every renderer now receives a special optional prop, 
-	<em>syntheticOnLinkPress</em>,
-  that one can choose to handle, ignore, or pass to children.
-</p>
-<hr />
-<p>
   In the below example, the anchor encompasses both raw text and an img tag.
   You can click the image and you'll be directed to a WebView.
 </p>
