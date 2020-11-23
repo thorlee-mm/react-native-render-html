@@ -50,10 +50,10 @@ const TChildrenRenderer: React.FunctionComponent<
       );
     }
     return React.createElement(TNodeRenderer, {
+      collapsedMarginTop,
       hasAnchorAncestor: hasAnchorAncestor || tnode.isAnchor,
       tnode: childTnode,
-      key: i,
-      collapsedMarginTop
+      key: i
     });
   });
   return <>{children}</>;

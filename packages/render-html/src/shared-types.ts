@@ -2,6 +2,8 @@ import {
   Falsy,
   GestureResponderEvent,
   StyleProp,
+  TextProps,
+  ViewProps,
   ViewStyle
 } from 'react-native';
 import type {
@@ -10,7 +12,9 @@ import type {
   DOMText,
   DOMElement,
   TNode,
-  TBlock
+  TBlock,
+  TText,
+  TPhrasing
 } from '@native-html/transient-render-engine';
 import { ReactElement, ReactNode } from 'react';
 import {
@@ -275,36 +279,45 @@ export interface TNodeGenericRendererProps<T extends TNode> {
   key?: string | number;
   hasAnchorAncestor: boolean;
   collapsedMarginTop: number | null;
-  syntheticAnchorOnLinkPress?: (e: GestureResponderEvent) => void;
 }
 
-export interface RendererProps<T extends TNode>
-  extends TNodeGenericRendererProps<T> {
-  /**
-   * An object filled with styles which are compatible with React Native
-   * "style" prop.
-   */
-  nativeStyle: T extends TBlock
-    ? TStyles['nativeBlockFlow'] & TStyles['nativeBlockRet']
-    : TStyles['nativeBlockFlow'] &
-        TStyles['nativeBlockRet'] &
-        TStyles['nativeTextFlow'] &
-        TStyles['nativeTextRet'];
-  /**
-   * An object filled with styles which are no compatible with React Native
-   * "style" prop.
-   */
-  untranslatedStyle: TStyles['webTextFlow'];
+export type NativeBlockStyles = TStyles['nativeBlockFlow'] &
+  TStyles['nativeBlockRet'];
+
+export type NativeTextStyles = TStyles['nativeBlockFlow'] &
+  TStyles['nativeBlockRet'] &
+  TStyles['nativeTextFlow'] &
+  TStyles['nativeTextRet'];
+
+export type NativeStyleProp<T extends TNode> = T extends TBlock
+  ? NativeBlockStyles
+  : NativeTextStyles;
+
+export type TDefaultRendererProps<T extends TNode> = Pick<
+  TNodeGenericRendererProps<T>,
+  'tnode' | 'key' | 'hasAnchorAncestor'
+> & {
   /**
    * When children is present, renderChildren will not be invoked.
    */
   children?: ReactNode;
   /**
+   * Style extracted from TNode.style
+   */
+  style: NativeStyleProp<T>;
+  /**
+   * Any default renderer should be able to handle press.
+   */
+  onPress?: (e: GestureResponderEvent) => void;
+} & (T extends TText ? TextProps : T extends TPhrasing ? TextProps : ViewProps);
+
+export type RendererProps<T extends TNode> = TDefaultRendererProps<T> & {
+  /**
    * Default renderer for this tnode.
    */
   TDefaultRenderer: TDefaultRenderer<T>;
-}
+};
 
 export type TDefaultRenderer<T extends TNode> = React.ComponentType<
-  Omit<RendererProps<T>, 'TDefaultRenderer'>
+  TDefaultRendererProps<T>
 >;

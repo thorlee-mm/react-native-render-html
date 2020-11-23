@@ -1,7 +1,7 @@
 import React, { ComponentType } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTChildrenRenderer } from '../context/TNodeRenderersContext';
-import { DefaultRenderers } from '../defaultRenderers';
+import { BlockRenderer } from '../defaultRenderers';
 import { getStringPrefixFromIndex } from './getStringListPrefixFromIndex';
 import numOfCharsInPrefix from './numOfCharsInPrefix';
 
@@ -147,9 +147,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const ListRenderer: DefaultRenderers['block'][string] = ({
-  syntheticAnchorOnLinkPress,
-  nativeStyle,
+const ListRenderer: BlockRenderer = ({
+  style,
   tnode,
   TDefaultRenderer,
   hasAnchorAncestor,
@@ -177,7 +176,7 @@ const ListRenderer: DefaultRenderers['block'][string] = ({
       {...props}
       hasAnchorAncestor={hasAnchorAncestor}
       tnode={tnode}
-      nativeStyle={{ ...nativeStyle, paddingLeft }}>
+      style={[style, { paddingLeft }]}>
       {tnode.children.map((childTNode, i) => (
         <View key={i} style={styles.row}>
           <View
@@ -205,5 +204,7 @@ const ListRenderer: DefaultRenderers['block'][string] = ({
     </TDefaultRenderer>
   );
 };
+
+ListRenderer.displayType = 'block';
 
 export default ListRenderer;
